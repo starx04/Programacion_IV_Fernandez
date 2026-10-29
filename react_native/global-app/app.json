@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "forms-app",
-    "slug": "forms-app",
+    "name": "global-app",
+    "slug": "global-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "formsapp",
+    "scheme": "globalapp",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"
