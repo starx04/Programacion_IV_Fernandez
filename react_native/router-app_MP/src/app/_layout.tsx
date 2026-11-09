@@ -5,14 +5,21 @@ export default function RootLayout() {
   return (
     <Stack
       screenOptions={{
-        headerStyle:      { backgroundColor: '#087e8b' },
+        headerStyle:      { backgroundColor: '#1565c0' },
         headerTintColor:  '#ffffff',
         headerTitleStyle: { fontWeight: '700' },
       }}
     >
+      {/* Pantallas normales — no necesitan declaración explícita */}
+      {/* Modal — debe declararse aquí con presentation: 'modal' */}
       <Stack.Screen
-        name="(Tabs)"
-        options={{ headerShown: false }}
+        name="(modals)/agregar"
+        options={{
+          presentation:  'modal',
+          title:         'Agregar servidor',
+          headerStyle:   { backgroundColor: '#263238' },
+          headerTintColor: '#eceff1',
+        }}
       />
     </Stack>
   )

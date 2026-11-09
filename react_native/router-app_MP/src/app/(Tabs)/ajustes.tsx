@@ -1,33 +1,26 @@
-import { Stack } from 'expo-router'
+// app/(tabs)/ajustes.tsx
 import { StyleSheet, Text, View } from 'react-native'
+import { Stack } from 'expo-router'
 
-export default function TabGarantia() {
+export default function TabAjustes() {
   return (
     <View style={styles.contenedor}>
-      <Stack.Screen options={{ title: 'Garantía y soporte' }} />
-      <Text style={styles.marca}>COMPRA CON CONFIANZA</Text>
-      <Text style={styles.titulo}>Tu equipo, protegido</Text>
-      <View style={styles.tarjeta}>
-        <Text style={styles.subtitulo}>Garantía de fábrica</Text>
-        <Text style={styles.item}>12 meses para smartphones nuevos</Text>
-      </View>
-      <View style={styles.tarjeta}>
-        <Text style={styles.subtitulo}>Devoluciones</Text>
-        <Text style={styles.item}>Tienes 30 días para solicitar un cambio</Text>
-      </View>
-      <View style={styles.tarjeta}>
-        <Text style={styles.subtitulo}>Atención al cliente</Text>
-        <Text style={styles.item}>Lunes a sábado · 9:00 a 18:00</Text>
-      </View>
+      <Stack.Screen options={{ title: 'Ajustes' }} />
+      <Text style={styles.titulo}>Configuración</Text>
+      <Text style={styles.item}>Intervalo de polling: 30 s</Text>
+      <Text style={styles.item}>Notificaciones: activas</Text>
+      <Text style={styles.item}>Zona horaria: UTC-6</Text>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  contenedor: { backgroundColor: '#f4f7fb', flex: 1, gap: 14, padding: 20 },
-  marca: { color: '#087e8b', fontSize: 11, fontWeight: '800', letterSpacing: 1.5 },
-  titulo: { color: '#102a43', fontSize: 22, fontWeight: '800', marginBottom: 4 },
-  tarjeta: { backgroundColor: '#fff', borderColor: '#d9e2ec', borderRadius: 12, borderWidth: 1, gap: 6, padding: 16 },
-  subtitulo: { color: '#102a43', fontSize: 15, fontWeight: '700' },
-  item: { color: '#627d98', fontSize: 13, lineHeight: 19 },
+  contenedor: {
+    flex: 1,
+    backgroundColor: '#f0f4f8',
+    padding: 24,
+    gap: 16,
+  },
+  titulo: { fontSize: 20, fontWeight: '700', color: '#1a237e' },
+  item:   { fontSize: 15, color: '#37474f' },
 })

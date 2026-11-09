@@ -1,25 +1,46 @@
-import { Stack } from 'expo-router'
+// app/(tabs)/alertas.tsx
 import { FlatList, StyleSheet, Text, View } from 'react-native'
+import { Stack } from 'expo-router'
 
-const OFERTAS = [
-  { id: '1', categoria: 'FIN DE SEMANA', titulo: '15 % en equipos seleccionados', equipo: 'Nova X Pro', color: '#087e8b' },
-  { id: '2', categoria: 'ACCESORIOS', titulo: 'Audífonos con 20 % de descuento', equipo: 'Nova Buds', color: '#7c3aed' },
-  { id: '3', categoria: 'ÚLTIMAS UNIDADES', titulo: 'Precio especial por lanzamiento', equipo: 'PixelWave 8', color: '#d97706' },
+interface Alerta {
+  id:      string
+  nivel:   'crítico' | 'advertencia' | 'info'
+  mensaje: string
+  host:    string
+  tiempo:  string
+}
+
+const ALERTAS: Alerta[] = [
+  { id: '1', nivel: 'crítico',     mensaje: 'Disco al 92 %',         host: 'worker-01',   tiempo: 'hace 2 min' },
+  { id: '2', nivel: 'crítico',     mensaje: 'CPU sostenida > 90 %',  host: 'worker-01',   tiempo: 'hace 5 min' },
+  { id: '3', nivel: 'advertencia', mensaje: 'RAM > 75 %',            host: 'cache-01',    tiempo: 'hace 18 min' },
+  { id: '4', nivel: 'info',        mensaje: 'Backup completado',     host: 'storage-nas', tiempo: 'hace 1 h' },
 ]
 
-export default function TabPromociones() {
+const COLOR_NIVEL: Record<Alerta['nivel'], string> = {
+  'crítico':     '#c62828',
+  'advertencia': '#e65100',
+  'info':        '#1565c0',
+}
+
+export default function TabAlertas() {
   return (
-    <View style={styles.pantalla}>
-      <Stack.Screen options={{ title: 'Ofertas MoviTech' }} />
+    <View style={{ flex: 1, backgroundColor: '#f0f4f8' }}>
+      <Stack.Screen options={{ title: 'Alertas' }} />
       <FlatList
-        data={OFERTAS}
-        keyExtractor={(oferta) => oferta.id}
-        contentContainerStyle={styles.lista}
+        data={ALERTAS}
+        keyExtractor={(a) => a.id}
+        contentContainerStyle={{ padding: 16, gap: 10 }}
         renderItem={({ item }) => (
-          <View style={styles.tarjeta}>
-            <Text style={[styles.categoria, { color: item.color }]}>{item.categoria}</Text>
-            <Text style={styles.titulo}>{item.titulo}</Text>
-            <Text style={styles.equipo}>Válido para {item.equipo}</Text>
+          <View style={estAlertas.tarjeta}>
+            <View style={estAlertas.cabecera}>
+              <View style={[estAlertas.badge, { backgroundColor: COLOR_NIVEL[item.nivel] }]}>
+                <Text style={estAlertas.badgeTexto}>{item.nivel.toUpperCase()}</Text>
+              </View>
+              <Text style={estAlertas.tiempo}>{item.tiempo}</Text>
+            </View>
+            <Text style={estAlertas.mensaje}>{item.mensaje}</Text>
+            <Text style={estAlertas.host}>{item.host}</Text>
           </View>
         )}
       />
@@ -27,11 +48,26 @@ export default function TabPromociones() {
   )
 }
 
-const styles = StyleSheet.create({
-  pantalla: { backgroundColor: '#f4f7fb', flex: 1 },
-  lista: { gap: 12, padding: 16 },
-  tarjeta: { backgroundColor: '#fff', borderColor: '#d9e2ec', borderRadius: 12, borderWidth: 1, gap: 7, padding: 16 },
-  categoria: { fontSize: 11, fontWeight: '800', letterSpacing: 1 },
-  titulo: { color: '#102a43', fontSize: 16, fontWeight: '700' },
-  equipo: { color: '#627d98', fontSize: 13 },
+const estAlertas = StyleSheet.create({
+  tarjeta: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 14,
+    gap: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  cabecera:  { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  badge: {
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  badgeTexto: { color: '#fff', fontSize: 11, fontWeight: '700' },
+  tiempo:     { fontSize: 12, color: '#90a4ae' },
+  mensaje:    { fontSize: 14, color: '#1a1a1a', fontWeight: '500' },
+  host:       { fontSize: 12, color: '#1565c0', fontFamily: 'monospace' },
 })

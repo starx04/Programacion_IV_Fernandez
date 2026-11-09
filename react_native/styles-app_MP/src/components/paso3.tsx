@@ -1,49 +1,132 @@
+// app/index.tsx — añade la función Paso3
 import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native'
 
-const productos = [
-  { id: '1', modelo: 'Nova X Pro', almacenamiento: '256 GB', precio: '$899', stock: 7 },
-  { id: '2', modelo: 'PixelWave 8', almacenamiento: '128 GB', precio: '$649', stock: 12 },
-  { id: '3', modelo: 'Zenith A5', almacenamiento: '128 GB', precio: '$399', stock: 4 },
-  { id: '4', modelo: 'Orbit Mini', almacenamiento: '64 GB', precio: '$279', stock: 0 },
-  { id: '5', modelo: 'Nova X', almacenamiento: '128 GB', precio: '$729', stock: 9 },
-  { id: '6', modelo: 'PixelWave 8 Pro', almacenamiento: '256 GB', precio: '$949', stock: 2 },
+type Servidor = {
+  id: string
+  nombre: string
+  ip: string
+  estado: 'activo' | 'alerta' | 'inactivo'
+  cpu: number
+}
+
+const SERVIDORES: Servidor[] = [
+  { id: '1', nombre: 'prod-web-01', ip: '10.0.1.10', estado: 'activo',   cpu: 42 },
+  { id: '2', nombre: 'prod-web-02', ip: '10.0.1.11', estado: 'activo',   cpu: 38 },
+  { id: '3', nombre: 'prod-db-01',  ip: '10.0.2.10', estado: 'alerta',   cpu: 91 },
+  { id: '4', nombre: 'prod-db-02',  ip: '10.0.2.11', estado: 'activo',   cpu: 55 },
+  { id: '5', nombre: 'stg-web-01',  ip: '10.1.1.10', estado: 'activo',   cpu: 12 },
+  { id: '6', nombre: 'stg-db-01',   ip: '10.1.2.10', estado: 'inactivo', cpu: 0  },
+  { id: '7', nombre: 'dev-01',      ip: '10.2.1.10', estado: 'activo',   cpu: 7  },
+  { id: '8', nombre: 'dev-02',      ip: '10.2.1.11', estado: 'alerta',   cpu: 78 },
 ]
+
+const COLOR_ESTADO: Record<Servidor['estado'], string> = {
+  activo:   '#2e7d32',
+  alerta:   '#e65100',
+  inactivo: '#6b7280',
+}
 
 export function Paso3() {
   const { width } = useWindowDimensions()
-  const columnas = width >= 600 ? 3 : 2
-  const gap = 12
-  const anchoTarjeta = Math.max(130, (width - 36 - gap * (columnas - 1)) / columnas)
+
+  // Grid responsivo: 2 columnas en teléfono (< 600dp), 4 en tablet (≥ 600dp)
+  const columnas = width >= 600 ? 4 : 2
+  const GAP = 12
+  const anchoTarjeta = (width - 32 - GAP * (columnas - 1)) / columnas
 
   return (
-    <ScrollView style={styles.pantalla} contentContainerStyle={styles.contenido}>
-      <Text style={styles.titulo}>Equipos destacados</Text>
-      <Text style={styles.meta}>{width} dp · {columnas} columnas responsivas</Text>
-      <View style={[styles.rejilla, { gap }]}>
-        {productos.map((producto) => (
-          <View key={producto.id} style={[styles.tarjeta, { width: anchoTarjeta }]}>
-            <View style={[styles.indicador, { backgroundColor: producto.stock ? '#2e7d32' : '#c62828' }]} />
-            <Text numberOfLines={1} style={styles.modelo}>{producto.modelo}</Text>
-            <Text style={styles.detalle}>{producto.almacenamiento}</Text>
-            <Text style={styles.precio}>{producto.precio}</Text>
-            <Text style={styles.stock}>{producto.stock ? `${producto.stock} en stock` : 'Agotado'}</Text>
-          </View>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: '#f5f7fa' }}
+      contentContainerStyle={{ padding: 16, gap: GAP }}
+    >
+      <Text style={estilosPaso3.cabecera}>
+        Dashboard · {width}dp · {columnas} col
+      </Text>
+
+      <View style={[estilosPaso3.rejilla, { gap: GAP }]}>
+        {SERVIDORES.map((srv) => (
+          <TarjetaServidor
+            key={srv.id}
+            servidor={srv}
+            ancho={anchoTarjeta}
+          />
         ))}
       </View>
     </ScrollView>
   )
 }
 
-const styles = StyleSheet.create({
-  pantalla: { flex: 1, backgroundColor: '#f4f7fb' },
-  contenido: { gap: 12, padding: 18 },
-  titulo: { color: '#102a43', fontSize: 22, fontWeight: '800' },
-  meta: { color: '#627d98', fontFamily: 'monospace', fontSize: 12 },
-  rejilla: { flexDirection: 'row', flexWrap: 'wrap' },
-  tarjeta: { backgroundColor: '#fff', borderColor: '#d9e2ec', borderRadius: 12, borderWidth: 1, gap: 5, padding: 12 },
-  indicador: { alignSelf: 'flex-end', borderRadius: 5, height: 10, width: 10 },
-  modelo: { color: '#102a43', fontSize: 14, fontWeight: '700' },
-  detalle: { color: '#627d98', fontSize: 12 },
-  precio: { color: '#087e8b', fontSize: 16, fontWeight: '800', marginTop: 4 },
-  stock: { color: '#627d98', fontSize: 11 },
+function TarjetaServidor({
+  servidor,
+  ancho,
+}: {
+  servidor: Servidor
+  ancho: number
+}) {
+  const colorEstado = COLOR_ESTADO[servidor.estado]
+
+  return (
+    <View style={[estilosPaso3.tarjeta, { width: ancho }]}>
+      {/* Indicador de estado */}
+      <View style={[estilosPaso3.indicadorEstado, { backgroundColor: colorEstado }]} />
+
+      <Text style={estilosPaso3.nombreServidor} numberOfLines={1}>
+        {servidor.nombre}
+      </Text>
+      <Text style={estilosPaso3.ip}>{servidor.ip}</Text>
+
+      {/* Barra de CPU */}
+      <View style={estilosPaso3.barraFondo}>
+        <View
+          style={[
+            estilosPaso3.barraRelleno,
+            {
+              width: `${servidor.cpu}%`,
+              backgroundColor: servidor.cpu > 80 ? '#c62828' : '#1565c0',
+            },
+          ]}
+        />
+      </View>
+      <Text style={estilosPaso3.cpu}>CPU: {servidor.cpu}%</Text>
+    </View>
+  )
+}
+
+const estilosPaso3 = StyleSheet.create({
+  cabecera: {
+    fontSize: 13,
+    color: '#6b7280',
+    fontFamily: 'monospace',
+    marginBottom: 4,
+  },
+  rejilla: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  tarjeta: {
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    padding: 12,
+    gap: 4,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  indicadorEstado: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    alignSelf: 'flex-end',
+    marginBottom: 4,
+  },
+  nombreServidor: { fontSize: 13, fontWeight: '700', color: '#1a1a2e' },
+  ip:             { fontSize: 11, color: '#6b7280' },
+  barraFondo: {
+    height: 6,
+    backgroundColor: '#e2e8f0',
+    borderRadius: 3,
+    marginTop: 6,
+    overflow: 'hidden',
+  },
+  barraRelleno: { height: 6, borderRadius: 3 },
+  cpu:          { fontSize: 11, color: '#6b7280' },
 })
